@@ -1,5 +1,4 @@
 # CnBlog
 RSS for cnblog.com
-
-* preview
+* preview *
 ![主界面](https://github.com/gmyboy/CnBlog/blob/master/screenshots/main.png)
