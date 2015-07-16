@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="tab_titles">
+        <item>推荐新闻</item>
+        <item>热门新闻</item>
+        <item>最新新闻</item>
+        <item>所有博客</item>
+        <item>48小时阅读排行</item>
+        <item>10天内阅读排行</item>
+    </string-array>
+</resources>
