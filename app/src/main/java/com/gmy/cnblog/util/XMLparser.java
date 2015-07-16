@@ -115,6 +115,7 @@ public class XMLparser {
 
     /**
      * 获取所有博客信息
+     *
      * @param path
      * @return
      * @throws IOException
@@ -176,6 +177,8 @@ public class XMLparser {
                         bloger.setTitle(parser.nextText());
                     } else if (name.equals("uri") && blog != null) {
                         bloger.setLink(parser.nextText());
+                    } else if (name.equals("avatar") && blog != null) {
+                        bloger.setAvatar(parser.nextText());
                     } else if (name.equals("diggs") && blog != null) {
                         blog.setDiggs(parser.next());
                     } else if (name.equals("views") && blog != null) {

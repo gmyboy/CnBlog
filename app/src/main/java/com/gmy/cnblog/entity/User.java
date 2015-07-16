@@ -4,13 +4,13 @@ package com.gmy.cnblog.entity;
  * Created by Administrator on 2015/7/15.
  */
 public class User {
-    private String id;// 博主ID
-    private String title;// 博主name
-    private String update;// 更新时间
-    private String blogapp;// 发表app
+    private String id="";// 博主ID
+    private String title="";// 博主name
+    private String update="";// 更新时间
+    private String blogapp="";// 发表app
     private int postcount;// 总博文数
-    private String avatar;// 博主头像
-    private String link;// 随博客园的链接地址
+    private String avatar="";// 博主头像
+    private String link="";// 随博客园的链接地址
 
     public String getId() {
         return id;

@@ -7,16 +7,18 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
+import com.gmy.cnblog.fragment.BlogsCardFragment;
 import com.gmy.cnblog.fragment.NewsCardFragment;
 
 /**
  * Created by Administrator on 2015/7/15.
  */
 public class CardPageAdapter extends FragmentPagerAdapter {
-    private final String[] TITLES = {"推荐新闻", "热门新闻", "最新新闻", "所有博客", "48小时阅读排行", "十天内阅读排行",};
+    private String[] TITLES;
 
-    public CardPageAdapter(FragmentManager fm) {
+    public CardPageAdapter(FragmentManager fm, String[] mTitles) {
         super(fm);
+        this.TITLES = mTitles;
     }
 
     @Override
@@ -31,7 +33,10 @@ public class CardPageAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return NewsCardFragment.newInstance(position);
+        if (position < 3)
+            return NewsCardFragment.newInstance(position);
+        else
+            return BlogsCardFragment.newInstance(position);
     }
 
 }

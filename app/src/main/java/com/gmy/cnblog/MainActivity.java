@@ -1,118 +1,209 @@
 package com.gmy.cnblog;
 
-import android.graphics.Color;
+import android.annotation.TargetApi;
+import android.os.Build;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.gmy.cnblog.adapter.CardPageAdapter;
-import com.gmy.cnblog.view.PagerSlidingTabStrip;
+import com.gmy.cnblog.util.SnackbarUtil;
+import com.gmy.cnblog.util.SystemBarTintManager;
 
-public class MainActivity extends ActionBarActivity {
-    private PagerSlidingTabStrip mPagerSlidingTabStrip;
-    private ViewPager mViewPager;
+public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener, View.OnClickListener {
+    //初始化各种控件，照着xml中的顺序写
+    private DrawerLayout mDrawerLayout;
+    private CoordinatorLayout mCoordinatorLayout;
+    private AppBarLayout mAppBarLayout;
     private Toolbar mToolbar;
+    private TabLayout mTabLayout;
+    private ViewPager mViewPager;
+    private FloatingActionButton mFloatingActionButton;
+    private NavigationView mNavigationView;
+    // TabLayout中的tab标题
+    private String[] mTitles;
+    // ViewPager的数据适配器
+    private CardPageAdapter pageAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initView();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            setTranslucentStatus(true);
+        }
+        SystemBarTintManager tintManager = new SystemBarTintManager(this);
+        tintManager.setStatusBarTintEnabled(true);
+        tintManager.setStatusBarTintResource(R.color.main_blue_dark);
+        // 初始化各种控件
+        initViews();
+
+        // 初始化mTitles、mFragments等ViewPager需要的数据
+        //这里的数据都是模拟出来了，自己手动生成的，在项目中需要从网络获取数据
+        initData();
+
+        // 对各种控件进行设置、适配、填充数据
+        configViews();
+
     }
+
+    @TargetApi(19)
+    private void setTranslucentStatus(boolean on) {
+        Window win = getWindow();
+        WindowManager.LayoutParams winParams = win.getAttributes();
+        final int bits = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+        if (on) {
+            winParams.flags |= bits;
+        } else {
+            winParams.flags &= ~bits;
+        }
+        win.setAttributes(winParams);
+    }
+
+    private void initData() {
+        mTitles = getResources().getStringArray(R.array.tab_titles);
+    }
+
+    private void configViews() {
+
+        // 设置显示Toolbar
+        setSupportActionBar(mToolbar);
+
+        // 设置Drawerlayout开关指示器，即Toolbar最左边的那个icon
+        ActionBarDrawerToggle mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.open, R.string.close);
+        mActionBarDrawerToggle.syncState();
+        mDrawerLayout.setDrawerListener(mActionBarDrawerToggle);
+
+        //给NavigationView填充顶部区域，也可在xml中使用app:headerLayout="@layout/header_nav"来设置
+        mNavigationView.inflateHeaderView(R.layout.view_nav_header);
+        //给NavigationView填充Menu菜单，也可在xml中使用app:menu="@menu/menu_nav"来设置
+        mNavigationView.inflateMenu(R.menu.menu_nav);
+        // 自己写的方法，设置NavigationView中menu的item被选中后要执行的操作
+        onNavgationViewMenuItemSelected(mNavigationView);
+
+        // 初始化ViewPager的适配器，并设置给它
+        pageAdapter = new CardPageAdapter(getSupportFragmentManager(), mTitles);
+        mViewPager.setAdapter(pageAdapter);
+        // 设置ViewPager最大缓存的页面个数
+        mViewPager.setOffscreenPageLimit(5);
+        // 给ViewPager添加页面动态监听器（为了让Toolbar中的Title可以变化相应的Tab的标题）
+        mViewPager.addOnPageChangeListener(this);
+
+        mTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+        // 将TabLayout和ViewPager进行关联，让两者联动起来
+        mTabLayout.setupWithViewPager(mViewPager);
+        // 设置Tablayout的Tab显示ViewPager的适配器中的getPageTitle函数获取到的标题
+        mTabLayout.setTabsFromPagerAdapter(pageAdapter);
+
+        // 设置FloatingActionButton的点击事件
+        mFloatingActionButton.setOnClickListener(this);
+
+
+    }
+
+    /**
+     * 设置NavigationView中menu的item被选中后要执行的操作
+     *
+     * @param mNav
+     */
+    private void onNavgationViewMenuItemSelected(NavigationView mNav) {
+        mNav.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+
+                String msgString = "";
+
+                switch (menuItem.getItemId()) {
+                    case R.id.nav_menu_home:
+                        msgString = (String) menuItem.getTitle();
+                        break;
+                    case R.id.nav_menu_categories:
+                        msgString = (String) menuItem.getTitle();
+                        break;
+                    case R.id.nav_menu_feedback:
+                        msgString = (String) menuItem.getTitle();
+                        break;
+                    case R.id.nav_menu_setting:
+                        msgString = (String) menuItem.getTitle();
+                        break;
+                }
+
+                // Menu item点击后选中，并关闭Drawerlayout
+                menuItem.setChecked(true);
+                mDrawerLayout.closeDrawers();
+
+                // android-support-design兼容包中新添加的一个类似Toast的控件。
+                SnackbarUtil.show(mViewPager, msgString, 0);
+
+                return true;
+            }
+        });
+    }
+
+    private void initViews() {
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.id_drawerlayout);
+        mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.id_coordinatorlayout);
+        mAppBarLayout = (AppBarLayout) findViewById(R.id.id_appbarlayout);
+        mToolbar = (Toolbar) findViewById(R.id.id_toolbar);
+        mTabLayout = (TabLayout) findViewById(R.id.id_tablayout);
+        mViewPager = (ViewPager) findViewById(R.id.id_viewpager);
+        mFloatingActionButton = (FloatingActionButton) findViewById(R.id.id_floatingactionbutton);
+        mNavigationView = (NavigationView) findViewById(R.id.id_navigationview);
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
-    private void initView() {
-        //初始化toolbar
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mToolbar.setTitle("CnBlog");// 标题的文字需在setSupportActionBar之前，不然会无效
-        setSupportActionBar(mToolbar);
-        /* 菜单的监听可以在toolbar里设置，也可以像ActionBar那样，通过下面的两个回调方法来处理 */
-        mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.action_settings:
-                        Toast.makeText(MainActivity.this, "action_settings", 0)
-                                .show();
-                        break;
-                    default:
-                        break;
-                }
-                return true;
-            }
-        });
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        //初始化tabs
-        mPagerSlidingTabStrip = (PagerSlidingTabStrip) findViewById(R.id.tabs);
-        mViewPager = (ViewPager) findViewById(R.id.pager);
-        mViewPager.setAdapter(new CardPageAdapter(getSupportFragmentManager()));
-        mPagerSlidingTabStrip.setViewPager(mViewPager);
-        mPagerSlidingTabStrip
-                .setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-
-                    @Override
-                    public void onPageSelected(int arg0) {
-                        // colorChange(arg0);
-                    }
-
-                    @Override
-                    public void onPageScrolled(int arg0, float arg1, int arg2) {
-                    }
-
-                    @Override
-                    public void onPageScrollStateChanged(int arg0) {
-                    }
-                });
-        initTabsValue();
-    }
-    /**
-     * mPagerSlidingTabStrip默认值配置
-     *
-     */
-    private void initTabsValue() {
-        // 底部游标颜色
-        mPagerSlidingTabStrip.setIndicatorColor(Color.parseColor("#ffffff"));
-        // tab的分割线颜色
-        mPagerSlidingTabStrip.setDividerColor(Color.TRANSPARENT);
-        // tab背景
-        mPagerSlidingTabStrip.setBackgroundColor(Color.parseColor("#3190E8"));
-        // tab底线高度
-        mPagerSlidingTabStrip.setUnderlineHeight((int) TypedValue
-                .applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, getResources()
-                        .getDisplayMetrics()));
-        // 游标高度
-        mPagerSlidingTabStrip.setIndicatorHeight((int) TypedValue
-                .applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources()
-                        .getDisplayMetrics()));
-        // 选中的文字颜色
-        mPagerSlidingTabStrip.setSelectedTextColor(Color.WHITE);
-        // 正常文字颜色
-        mPagerSlidingTabStrip.setTextColor(Color.parseColor("#cfcfcf"));
-    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        mToolbar.setTitle(mTitles[position]);
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            // FloatingActionButton的点击事件
+            case R.id.id_floatingactionbutton:
+                SnackbarUtil.show(v, getString(R.string.plusone), 0);
+                break;
+        }
     }
 }

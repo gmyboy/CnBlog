@@ -7,11 +7,11 @@ public class Blog {
     private int comments;// 评论
     private int diggs;// 出处
     private int id;// ID
-    private String link_href;// 链接
-    private String published;// 发表时间
-    private String summary;// 内容
-    private String title;// 标题
-    private String updated;// 更新时间
+    private String link_href="";// 链接
+    private String published="";// 发表时间
+    private String summary="";// 内容
+    private String title="";// 标题
+    private String updated="";// 更新时间
     private int views;// 浏览次数
     private User user;// 博主信息
 
