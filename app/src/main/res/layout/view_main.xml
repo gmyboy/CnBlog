@@ -20,9 +20,9 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/id_appbarlayout"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:clipToPadding="true"
-        android:fitsSystemWindows="true"
-        android:layout_height="wrap_content">
+        android:fitsSystemWindows="true">
 
 
         <!--
@@ -51,7 +51,6 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|enterAlways"
-
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:theme="@style/ThemeOverlay.AppCompat.ActionBar"
             app:title="@string/app_name" />
