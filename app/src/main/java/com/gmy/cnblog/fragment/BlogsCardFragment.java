@@ -13,10 +13,7 @@ import android.view.ViewGroup;
 
 import com.gmy.cnblog.R;
 import com.gmy.cnblog.adapter.BlogsAdapter;
-import com.gmy.cnblog.adapter.NewsAdapter;
 import com.gmy.cnblog.entity.Blog;
-import com.gmy.cnblog.entity.News;
-import com.gmy.cnblog.util.Constant;
 import com.gmy.cnblog.util.XMLparser;
 
 import java.util.List;

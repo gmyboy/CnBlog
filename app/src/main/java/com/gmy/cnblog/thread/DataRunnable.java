@@ -5,8 +5,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import com.gmy.cnblog.util.Constant;
-
 /**
  * Created by Administrator on 2015/7/15.
  */

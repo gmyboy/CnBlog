@@ -16,7 +16,6 @@ import com.gmy.cnblog.R;
 import com.gmy.cnblog.ReplyActivity;
 import com.gmy.cnblog.adapter.NewsAdapter;
 import com.gmy.cnblog.entity.News;
-import com.gmy.cnblog.util.Constant;
 import com.gmy.cnblog.util.XMLparser;
 
 import java.util.List;
