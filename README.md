@@ -1,4 +1,5 @@
-# CnBlog [![Build Status](https://travis-ci.org/gmyboy/CnBlog)](https://travis-ci.org/gmyboy/CnBlog)
+# CnBlog [![Build Status](https://travis-ci.org/gmyboy/CnBlog.svg?branch=master)](https://travis-ci.org/gmyboy/CnBlog)
+
 RSS for cnblog.com
 * preview of news
 
